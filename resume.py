@@ -1,12 +1,24 @@
 import streamlit as st
 from datetime import datetime
-import os
 
 # ================= PAGE CONFIG =================
 st.set_page_config(page_title="Walfaanaa Resume", page_icon="📄", layout="centered")
 
 # ================= AUTO DATE =================
 today_date = datetime.today().strftime("%B %d, %Y")
+
+# ================= GITHUB FILE LINKS =================
+BASE_URL = "https://raw.githubusercontent.com/Walfaanaa/Resume_App/main/"
+
+files = {
+    "MSc Certificate": BASE_URL + "MSc_certificate.pdf",
+    "MBA Certificate": BASE_URL + "MBA_certificate.pdf",
+    "BSc Certificate": BASE_URL + "BSc_certificate.pdf",
+}
+
+exp_files = {
+    "Experience Proof": BASE_URL + "Experience.pdf"
+}
 
 # ================= HEADER =================
 st.markdown(f"""
@@ -33,7 +45,6 @@ application_text = st.text_area(
     placeholder="I am writing to apply for the position..."
 )
 
-# Auto generate option
 if st.button("✨ Generate Professional Application"):
     application_text = f"""
 I am writing to apply for the position of {position if position else 'the role'} at {company if company else 'your organization'}. 
@@ -46,8 +57,9 @@ and I am eager to bring value to your organization.
 Thank you for your time and consideration.
 """
 
-# Preview
+# ================= APPLICATION PREVIEW =================
 st.markdown("### 📄 Application Preview")
+
 st.write(f"**Date:** {today_date}")
 st.write(f"**To:** {company if company else '__________'}")
 st.write(f"**Position:** {position if position else '__________'}")
@@ -88,18 +100,8 @@ st.write("""
 
 st.markdown("### 📄 Education Evidence")
 
-files = {
-    "MSc Certificate": "MSc_certificate.pdf",
-    "MBA Certificate": "MBA_certificate.pdf",
-    "BSc Certificate": "BSc_certificate.pdf",
-}
-
-for name, path in files.items():
-    if os.path.exists(path):
-        with open(path, "rb") as f:
-            st.download_button(f"Download {name}", f, file_name=path)
-    else:
-        st.warning(f"{name} not found")
+for name, url in files.items():
+    st.link_button(f"📄 View {name}", url)
 
 st.divider()
 
@@ -114,16 +116,8 @@ st.write("""
 
 st.markdown("### 📄 Experience Evidence")
 
-exp_files = {
-    "Experience Proof": "Experience.pdf"
-}
-
-for name, path in exp_files.items():
-    if os.path.exists(path):
-        with open(path, "rb") as f:
-            st.download_button(f"Download {name}", f, file_name=path)
-    else:
-        st.warning(f"{name} not found")
+for name, url in exp_files.items():
+    st.link_button(f"📄 View {name}", url)
 
 st.divider()
 
@@ -142,6 +136,7 @@ st.divider()
 
 # ================= CONTACT =================
 st.subheader("📞 Contact")
+
 st.write("📧 Email: walfanamegersa3@gmail.com")
 st.write("📱 Phone: +251912861288")
 
