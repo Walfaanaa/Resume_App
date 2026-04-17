@@ -140,4 +140,3 @@ st.subheader("📞 Contact")
 st.write("📧 Email: walfanamegersa3@gmail.com")
 st.write("📱 Phone: +251912861288")
 
-st.success("✅ This CV & Application is ready to share as a live link.")
