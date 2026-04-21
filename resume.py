@@ -1,5 +1,6 @@
 import streamlit as st
 from datetime import datetime
+from fpdf import FPDF
 
 # ================= PAGE CONFIG =================
 st.set_page_config(page_title="Walfaanaa Resume", page_icon="📄", layout="centered")
@@ -140,3 +141,70 @@ st.subheader("📞 Contact")
 st.write("📧 Email: walfanamegersa3@gmail.com")
 st.write("📱 Phone: +251912861288")
 
+st.divider()
+
+# ================= PDF GENERATOR =================
+def create_pdf():
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+
+    content = [
+        "Curriculum Vitae",
+        f"Date: {today_date}",
+        "",
+        "Walfaanaa Magarsaa",
+        "Phone: +251912861288",
+        "Email: walfanamegersa3@gmail.com",
+        "LinkedIn: https://www.linkedin.com/in/walfaanaa-magarsaa/",
+        "",
+        "-----------------------------",
+        "APPLICATION LETTER",
+        "-----------------------------",
+        f"To: {company if company else '__________'}",
+        f"Position: {position if position else '__________'}",
+        "",
+        "Dear Hiring Manager,",
+        application_text if application_text else "",
+        "",
+        "Sincerely,",
+        "Walfaanaa Magarsaa",
+        "",
+        "-----------------------------",
+        "EDUCATION",
+        "-----------------------------",
+        "MSc Computational Data Science (2024)",
+        "MBA Business Administration (2020)",
+        "BSc Statistics (2016)",
+        "",
+        "-----------------------------",
+        "EXPERIENCE",
+        "-----------------------------",
+        "Cooperative Bank of Oromia",
+        "INSA Data Analytics",
+        "CSA Supervisor",
+        "",
+        "-----------------------------",
+        "SKILLS",
+        "-----------------------------",
+        "SQL, Python",
+        "Power BI, Tableau, Excel",
+        "Machine Learning & Deep Learning"
+    ]
+
+    for line in content:
+        pdf.multi_cell(0, 8, line)
+
+    return pdf.output(dest="S").encode("latin-1")
+
+# ================= DOWNLOAD BUTTON =================
+st.subheader("⬇️ Download Resume")
+
+pdf_file = create_pdf()
+
+st.download_button(
+    label="📄 Download Resume (PDF)",
+    data=pdf_file,
+    file_name="Walfaanaa_Resume.pdf",
+    mime="application/pdf"
+)
