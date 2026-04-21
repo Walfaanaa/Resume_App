@@ -1,14 +1,17 @@
 import streamlit as st
 from datetime import datetime
 from fpdf import FPDF
+from PyPDF2 import PdfMerger
+import requests
+from io import BytesIO
 
 # ================= PAGE CONFIG =================
 st.set_page_config(page_title="Walfaanaa Resume", page_icon="📄", layout="centered")
 
-# ================= AUTO DATE =================
+# ================= DATE =================
 today_date = datetime.today().strftime("%B %d, %Y")
 
-# ================= GITHUB FILE LINKS =================
+# ================= FILE LINKS =================
 BASE_URL = "https://raw.githubusercontent.com/Walfaanaa/Resume_App/main/"
 
 files = {
@@ -32,48 +35,38 @@ st.markdown(f"""
 
 st.divider()
 
-# ================= APPLICATION SECTION =================
+# ================= APPLICATION =================
 st.subheader("📨 Job Application")
 
 company = st.text_input("🏢 Company Name")
-position = st.text_input("💼 Position Applying For")
+position = st.text_input("💼 Position")
 
-st.markdown("### ✍️ Brief Application")
+application_text = st.text_area("✍️ Write Application", height=150)
 
-application_text = st.text_area(
-    "Write your short application message",
-    height=150,
-    placeholder="I am writing to apply for the position..."
-)
-
-if st.button("✨ Generate Professional Application"):
+if st.button("✨ Generate Application"):
     application_text = f"""
-I am writing to apply for the position of {position if position else 'the role'} at {company if company else 'your organization'}. 
-With my strong background in Data Analysis, SQL, Python, and Machine Learning, 
-I am confident in my ability to contribute effectively to your team.
+I am writing to apply for the position of {position or 'the role'} at {company or 'your organization'}.
 
-I have hands-on experience in data analytics, dashboard development, and ETL processes, 
-and I am eager to bring value to your organization.
+With strong skills in SQL, Python, BI tools, and Machine Learning, I can contribute effectively.
 
-Thank you for your time and consideration.
+I have experience in data analytics, dashboards, and ETL processes.
+
+Thank you for your consideration.
 """
 
-# ================= APPLICATION PREVIEW =================
-st.markdown("### 📄 Application Preview")
+# ================= PREVIEW =================
+st.subheader("📄 Preview")
 
-st.write(f"**Date:** {today_date}")
-st.write(f"**To:** {company if company else '__________'}")
-st.write(f"**Position:** {position if position else '__________'}")
+st.write(f"Date: {today_date}")
+st.write(f"To: {company or '________'}")
+st.write(f"Position: {position or '________'}")
 
 st.write("Dear Hiring Manager,")
 
-if application_text:
-    st.write(application_text)
-else:
-    st.write("Your application message will appear here...")
+st.write(application_text or "Your application will appear here...")
 
 st.write("Sincerely,")
-st.write("**Walfaanaa Magarsaa**")
+st.write("Walfaanaa Magarsaa")
 
 st.divider()
 
@@ -81,130 +74,135 @@ st.divider()
 col1, col2 = st.columns([1, 3])
 
 with col1:
-    st.image("1728453971208.jpg", width=150)
+    st.image("1728453971208.jpg", width=140)
 
 with col2:
     st.title("Walfaanaa Magarsaa")
-    st.subheader("Data Analyst | Data Scientist | BI Developer")
-    st.write("Experienced in SQL, Python, BI tools, and Machine Learning.")
+    st.write("Data Analyst | Data Scientist | BI Developer")
 
 st.divider()
 
 # ================= EDUCATION =================
 st.subheader("🎓 Education")
-
 st.write("""
-- MSc Computational Data Science (2024)  
-- MBA Business Administration (2020)  
+- MSc Computational Data Science (2024)
+- MBA Business Administration (2020)
 - BSc Statistics (2016)
 """)
 
-st.markdown("### 📄 Education Evidence")
-
+st.markdown("### 📄 View Certificates")
 for name, url in files.items():
-    st.link_button(f"📄 View {name}", url)
-
-st.divider()
+    st.link_button(f"📄 {name}", url)
 
 # ================= EXPERIENCE =================
 st.subheader("💼 Experience")
-
 st.write("""
-- Cooperative Bank of Oromia (Present)  
-- INSA Data Analytics  
-- CSA Supervisor  
+- Cooperative Bank of Oromia
+- INSA Data Analytics
+- CSA Supervisor
 """)
 
 st.markdown("### 📄 Experience Evidence")
-
 for name, url in exp_files.items():
-    st.link_button(f"📄 View {name}", url)
+    st.link_button(f"📄 {name}", url)
 
 st.divider()
 
 # ================= SKILLS =================
 st.subheader("🧠 Skills")
-
 st.write("""
-- SQL, Python  
-- Power BI, Tableau, Excel  
-- SPSS, R, MATLAB, C++  
-- ETL Tools (Talend, etc.)  
-- Machine Learning & Deep Learning  
+- SQL, Python
+- Power BI, Tableau, Excel
+- Machine Learning
 """)
 
 st.divider()
 
-# ================= CONTACT =================
-st.subheader("📞 Contact")
-
-st.write("📧 Email: walfanamegersa3@gmail.com")
-st.write("📱 Phone: +251912861288")
-
-st.divider()
-
-# ================= PDF GENERATOR =================
-def create_pdf():
+# ================= CREATE CV PDF =================
+def create_cv_pdf():
     pdf = FPDF()
     pdf.add_page()
     pdf.set_font("Arial", size=12)
 
-    content = [
+    lines = [
         "Curriculum Vitae",
         f"Date: {today_date}",
         "",
         "Walfaanaa Magarsaa",
-        "Phone: +251912861288",
         "Email: walfanamegersa3@gmail.com",
-        "LinkedIn: https://www.linkedin.com/in/walfaanaa-magarsaa/",
+        "Phone: +251912861288",
         "",
-        "-----------------------------",
-        "APPLICATION LETTER",
-        "-----------------------------",
-        f"To: {company if company else '__________'}",
-        f"Position: {position if position else '__________'}",
+        "APPLICATION",
+        f"To: {company or ''}",
+        f"Position: {position or ''}",
         "",
-        "Dear Hiring Manager,",
-        application_text if application_text else "",
+        application_text or "",
         "",
-        "Sincerely,",
-        "Walfaanaa Magarsaa",
-        "",
-        "-----------------------------",
         "EDUCATION",
-        "-----------------------------",
-        "MSc Computational Data Science (2024)",
-        "MBA Business Administration (2020)",
-        "BSc Statistics (2016)",
+        "MSc Computational Data Science",
+        "MBA Business Administration",
+        "BSc Statistics",
         "",
-        "-----------------------------",
         "EXPERIENCE",
-        "-----------------------------",
         "Cooperative Bank of Oromia",
         "INSA Data Analytics",
         "CSA Supervisor",
         "",
-        "-----------------------------",
         "SKILLS",
-        "-----------------------------",
-        "SQL, Python",
-        "Power BI, Tableau, Excel",
-        "Machine Learning & Deep Learning"
+        "SQL, Python, BI Tools, Machine Learning"
     ]
 
-    for line in content:
+    for line in lines:
         pdf.multi_cell(0, 8, line)
 
     return pdf.output(dest="S").encode("latin-1")
 
-# ================= DOWNLOAD BUTTON =================
-st.subheader("⬇️ Download Resume")
+# ================= MERGE PDF =================
+def merge_all_pdfs():
+    merger = PdfMerger()
 
-pdf_file = create_pdf()
+    # Add CV
+    merger.append(BytesIO(create_cv_pdf()))
 
+    # Add certificates
+    for url in files.values():
+        try:
+            response = requests.get(url)
+            merger.append(BytesIO(response.content))
+        except:
+            pass
+
+    # Add experience
+    for url in exp_files.values():
+        try:
+            response = requests.get(url)
+            merger.append(BytesIO(response.content))
+        except:
+            pass
+
+    output = BytesIO()
+    merger.write(output)
+    merger.close()
+
+    return output.getvalue()
+
+# ================= DOWNLOAD SECTION =================
+st.subheader("⬇️ Download")
+
+# CV only
+cv_pdf = create_cv_pdf()
 st.download_button(
-    label="📄 Download Resume (PDF)",
-    data=pdf_file,
-    file_name="Walfaanaa_Resume.pdf",
+    "📄 Download CV (PDF)",
+    data=cv_pdf,
+    file_name="Walfaanaa_CV.pdf",
+    mime="application/pdf"
+)
+
+# Full package
+full_pdf = merge_all_pdfs()
+st.download_button(
+    "📦 Download FULL Package (CV + Certificates)",
+    data=full_pdf,
+    file_name="Walfaanaa_Full.pdf",
     mime="application/pdf"
 )
