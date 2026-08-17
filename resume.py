@@ -369,64 +369,78 @@ def safe_text(text):
 # ============================================================
 def create_cv_pdf():
     pdf = FPDF()
-
-    pdf.set_auto_page_break(
-        auto=True,
-        margin=15
-    )
-
+    pdf.set_auto_page_break(auto=True, margin=15)
     pdf.add_page()
 
-    # ---------------- HEADER ----------------
+    # Page margins
+    pdf.set_left_margin(15)
+    pdf.set_right_margin(15)
+
+    # ========================================================
+    # HEADER
+    # ========================================================
     pdf.set_font("Arial", "B", 20)
     pdf.cell(
         0,
         12,
         "WALFAANAA MAGARSAA",
-        ln=True,
+        new_x="LMARGIN",
+        new_y="NEXT",
         align="C"
     )
 
-    pdf.set_font("Arial", "B", 12)
+    pdf.set_font("Arial", "B", 11)
     pdf.cell(
         0,
-        8,
+        7,
         "Data Analyst | Data Scientist | BI Developer",
-        ln=True,
+        new_x="LMARGIN",
+        new_y="NEXT",
         align="C"
     )
 
-    pdf.set_font("Arial", size=10)
+    pdf.set_font("Arial", size=9)
 
     pdf.cell(
         0,
-        7,
+        6,
         "Email: walfanamegersa3@gmail.com | Phone: +251 912 861 288",
-        ln=True,
+        new_x="LMARGIN",
+        new_y="NEXT",
         align="C"
     )
 
     pdf.cell(
         0,
-        7,
+        6,
         "LinkedIn: linkedin.com/in/walfaanaa-magarsaa/",
-        ln=True,
+        new_x="LMARGIN",
+        new_y="NEXT",
         align="C"
     )
 
     pdf.cell(
         0,
-        7,
+        6,
         f"Date: {today_date}",
-        ln=True,
+        new_x="LMARGIN",
+        new_y="NEXT",
         align="C"
     )
 
     pdf.ln(5)
 
-    # ---------------- PROFILE ----------------
+    # ========================================================
+    # PROFILE
+    # ========================================================
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 9, "PROFESSIONAL PROFILE", ln=True)
+    pdf.cell(
+        0,
+        8,
+        "PROFESSIONAL PROFILE",
+        new_x="LMARGIN",
+        new_y="NEXT"
+    )
 
     pdf.set_font("Arial", size=10)
 
@@ -439,16 +453,26 @@ def create_cv_pdf():
     )
 
     pdf.multi_cell(
-        0,
+        180,
         6,
-        safe_text(profile)
+        safe_text(profile),
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
     pdf.ln(3)
 
-    # ---------------- EDUCATION ----------------
+    # ========================================================
+    # EDUCATION
+    # ========================================================
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 9, "EDUCATION", ln=True)
+    pdf.cell(
+        0,
+        8,
+        "EDUCATION",
+        new_x="LMARGIN",
+        new_y="NEXT"
+    )
 
     pdf.set_font("Arial", size=10)
 
@@ -460,102 +484,136 @@ def create_cv_pdf():
 
     for item in education:
         pdf.multi_cell(
-            0,
+            180,
             6,
-            safe_text("- " + item)
+            safe_text("- " + item),
+            new_x="LMARGIN",
+            new_y="NEXT"
         )
 
     pdf.ln(3)
 
-    # ---------------- EXPERIENCE ----------------
+    # ========================================================
+    # EXPERIENCE
+    # ========================================================
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 9, "PROFESSIONAL EXPERIENCE", ln=True)
-
-    pdf.set_font("Arial", size=10)
+    pdf.cell(
+        0,
+        8,
+        "PROFESSIONAL EXPERIENCE",
+        new_x="LMARGIN",
+        new_y="NEXT"
+    )
 
     experience = [
-        (
-            "Cooperative Bank of Oromia",
-            "Data Analytics / Reporting"
-        ),
-        (
-            "INSA",
-            "Data Analytics / Data Science Research"
-        ),
-        (
-            "CSA",
-            "Supervisor"
-        )
+        ("Cooperative Bank of Oromia", "Data Analytics / Reporting"),
+        ("INSA", "Data Analytics / Data Science Research"),
+        ("CSA", "Supervisor")
     ]
 
     for organization, role in experience:
+
         pdf.set_font("Arial", "B", 10)
+
         pdf.cell(
             0,
             6,
             safe_text(organization),
-            ln=True
+            new_x="LMARGIN",
+            new_y="NEXT"
         )
 
         pdf.set_font("Arial", size=10)
+
         pdf.cell(
             0,
             6,
             safe_text(role),
-            ln=True
+            new_x="LMARGIN",
+            new_y="NEXT"
         )
 
-        pdf.ln(1)
+        pdf.ln(2)
 
-    pdf.ln(3)
+    pdf.ln(2)
 
-    # ---------------- SKILLS ----------------
+    # ========================================================
+    # SKILLS
+    # ========================================================
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 9, "TECHNICAL SKILLS", ln=True)
+    pdf.cell(
+        0,
+        8,
+        "TECHNICAL SKILLS",
+        new_x="LMARGIN",
+        new_y="NEXT"
+    )
 
     pdf.set_font("Arial", size=10)
 
-    skill_text = ", ".join(skills)
+    skill_text = (
+        "SQL, Python, Power BI, Tableau, Microsoft Excel, "
+        "Machine Learning, Data Analytics, ETL, Data Visualization, "
+        "Reporting, Database Management"
+    )
 
     pdf.multi_cell(
-        0,
+        180,
         6,
-        safe_text(skill_text)
+        safe_text(skill_text),
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
     pdf.ln(5)
 
-    # ---------------- APPLICATION ----------------
+    # ========================================================
+    # APPLICATION
+    # ========================================================
     pdf.set_font("Arial", "B", 14)
-    pdf.cell(0, 9, "APPLICATION", ln=True)
+    pdf.cell(
+        0,
+        8,
+        "APPLICATION",
+        new_x="LMARGIN",
+        new_y="NEXT"
+    )
 
     pdf.set_font("Arial", size=10)
 
     pdf.cell(
         0,
         6,
-        safe_text(f"Company: {company}"),
-        ln=True
+        safe_text(f"Company: {company or ''}"),
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
     pdf.cell(
         0,
         6,
-        safe_text(f"Position: {position}"),
-        ln=True
+        safe_text(f"Position: {position or ''}"),
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
-    pdf.ln(3)
+    pdf.ln(4)
 
-    pdf.multi_cell(
-        0,
-        6,
-        safe_text(
-            st.session_state.application_text
-            or application_text
-            or ""
+    application = (
+        st.session_state.application_text
+        or application_text
+        or ""
+    )
+
+    if application.strip():
+
+        pdf.multi_cell(
+            180,
+            6,
+            safe_text(application),
+            new_x="LMARGIN",
+            new_y="NEXT"
         )
-    )
 
     pdf.ln(5)
 
@@ -563,18 +621,22 @@ def create_cv_pdf():
         0,
         6,
         "Sincerely,",
-        ln=True
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
     pdf.cell(
         0,
         6,
         "Walfaanaa Magarsaa",
-        ln=True
+        new_x="LMARGIN",
+        new_y="NEXT"
     )
 
-    return bytes(pdf.output())
-
+    # ========================================================
+    # RETURN PDF
+    # ========================================================
+    return pdf.output()
 
 # ============================================================
 # DOWNLOAD REMOTE PDF
