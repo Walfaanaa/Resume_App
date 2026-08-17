@@ -702,42 +702,167 @@ def merge_all_pdfs():
 
 
 # ============================================================
+# ============================================================
+# DOWNLOAD REMOTE PDF
+# ============================================================
+def download_pdf(url):
+    """
+    Download a PDF from GitHub and return it as BytesIO.
+    """
+    response = requests.get(
+        url,
+        timeout=20
+    )
+
+    response.raise_for_status()
+
+    # Make sure the downloaded content is actually a PDF
+    content_type = response.headers.get("Content-Type", "").lower()
+
+    if not response.content:
+        raise ValueError("Downloaded file is empty.")
+
+    return BytesIO(response.content)
+
+
+# ============================================================
+# MERGE FULL PACKAGE
+# ============================================================
+def merge_all_pdfs():
+
+    merger = PdfMerger()
+
+    try:
+        # ----------------------------------------------------
+        # CV
+        # ----------------------------------------------------
+        cv_data = create_cv_pdf()
+
+        # Ensure CV is bytes
+        if isinstance(cv_data, bytes):
+            cv_bytes = cv_data
+        elif isinstance(cv_data, bytearray):
+            cv_bytes = bytes(cv_data)
+        else:
+            cv_bytes = bytes(cv_data)
+
+        merger.append(BytesIO(cv_bytes))
+
+        # ----------------------------------------------------
+        # CERTIFICATES
+        # ----------------------------------------------------
+        for name, url in files.items():
+
+            try:
+                pdf_file = download_pdf(url)
+                merger.append(pdf_file)
+
+            except Exception as e:
+                st.warning(
+                    f"Could not add {name}: {e}"
+                )
+
+        # ----------------------------------------------------
+        # EXPERIENCE DOCUMENTS
+        # ----------------------------------------------------
+        for name, url in exp_files.items():
+
+            try:
+                pdf_file = download_pdf(url)
+                merger.append(pdf_file)
+
+            except Exception as e:
+                st.warning(
+                    f"Could not add {name}: {e}"
+                )
+
+        # ----------------------------------------------------
+        # CREATE MERGED PDF
+        # ----------------------------------------------------
+        output = BytesIO()
+
+        merger.write(output)
+        output.seek(0)
+
+        return output.getvalue()
+
+    finally:
+        merger.close()
+
+
+# ============================================================
 # DOWNLOAD SECTION
 # ============================================================
 st.subheader("⬇️ Download Documents")
 
-# ---------------- CV ----------------
-cv_pdf = create_cv_pdf()
+# ============================================================
+# CV DOWNLOAD
+# ============================================================
+try:
 
-st.download_button(
-    label="📄 Download CV",
-    data=cv_pdf,
-    file_name="Walfaanaa_Magarsaa_CV.pdf",
-    mime="application/pdf",
-    use_container_width=True
-)
+    cv_pdf = create_cv_pdf()
 
-# ---------------- FULL PACKAGE ----------------
-with st.spinner("Preparing CV + certificates + experience documents..."):
+    # Explicitly convert to bytes
+    if isinstance(cv_pdf, bytes):
+        cv_download = cv_pdf
+    elif isinstance(cv_pdf, bytearray):
+        cv_download = bytes(cv_pdf)
+    else:
+        cv_download = bytes(cv_pdf)
 
-    try:
+    st.download_button(
+        label="📄 Download CV",
+        data=cv_download,
+        file_name="Walfaanaa_Magarsaa_CV.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        key="download_cv"
+    )
+
+except Exception as e:
+
+    st.error(
+        f"Could not create CV PDF: {e}"
+    )
+
+
+# ============================================================
+# FULL PACKAGE DOWNLOAD
+# ============================================================
+try:
+
+    with st.spinner(
+        "Preparing CV + certificates + experience documents..."
+    ):
+
         full_pdf = merge_all_pdfs()
 
-        st.download_button(
-            label="📦 Download Full Application Package",
-            data=full_pdf,
-            file_name="Walfaanaa_Magarsaa_Full_Application.pdf",
-            mime="application/pdf",
-            use_container_width=True
-        )
+        # Explicitly convert to bytes
+        if isinstance(full_pdf, bytes):
+            full_download = full_pdf
+        elif isinstance(full_pdf, bytearray):
+            full_download = bytes(full_pdf)
+        else:
+            full_download = bytes(full_pdf)
 
-    except Exception as e:
+    st.download_button(
+        label="📦 Download Full Application Package",
+        data=full_download,
+        file_name="Walfaanaa_Magarsaa_Full_Application.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        key="download_full_package"
+    )
 
-        st.error(
-            f"Could not create the full PDF package: {e}"
-        )
+except Exception as e:
+
+    st.error(
+        f"Could not create the full PDF package: {e}"
+    )
+
 
 st.divider()
+
 
 # ============================================================
 # FOOTER
