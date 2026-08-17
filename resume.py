@@ -5,204 +5,681 @@ from PyPDF2 import PdfMerger
 import requests
 from io import BytesIO
 
-# ================= PAGE CONFIG =================
-st.set_page_config(page_title="Walfaanaa Resume", page_icon="📄", layout="centered")
+# ============================================================
+# PAGE CONFIG
+# ============================================================
+st.set_page_config(
+    page_title="Walfaanaa Magarsaa | Resume",
+    page_icon="📄",
+    layout="centered"
+)
 
-# ================= DATE =================
+# ============================================================
+# DATE
+# ============================================================
 today_date = datetime.today().strftime("%B %d, %Y")
 
-# ================= FILE LINKS =================
+# ============================================================
+# GITHUB FILE URLS
+# ============================================================
 BASE_URL = "https://raw.githubusercontent.com/Walfaanaa/Resume_App/main/"
+
+PROFILE_IMAGE = BASE_URL + "1728453971208.jpg"
 
 files = {
     "MSc Certificate": BASE_URL + "MSc_certificate.pdf",
     "MBA Certificate": BASE_URL + "MBA_certificate.pdf",
     "BSc Certificate": BASE_URL + "BSc_certificate.pdf",
+    "Certification": BASE_URL + "Certification.pdf",
 }
 
 exp_files = {
     "Experience Proof": BASE_URL + "Experience.pdf"
 }
 
-# ================= HEADER =================
-st.markdown(f"""
-### 📄 Curriculum Vitae  
-**Date:** {today_date}  
-**Walfaanaa Magarsaa**  
-📞 +251912861288 | 📧 walfanamegersa3@gmail.com  
-🔗 LinkedIn: https://www.linkedin.com/in/walfaanaa-magarsaa/
-""")
+# ============================================================
+# SESSION STATE
+# ============================================================
+if "application_text" not in st.session_state:
+    st.session_state.application_text = ""
+
+# ============================================================
+# CUSTOM CSS
+# ============================================================
+st.markdown(
+    """
+    <style>
+    .main-title {
+        text-align: center;
+        font-size: 34px;
+        font-weight: bold;
+        margin-bottom: 0;
+    }
+
+    .subtitle {
+        text-align: center;
+        font-size: 18px;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .contact {
+        text-align: center;
+        font-size: 15px;
+        margin-top: 10px;
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-top: 25px;
+    }
+
+    .preview-box {
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        background-color: #fafafa;
+    }
+
+    .skill-box {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        margin-bottom: 8px;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ============================================================
+# HEADER
+# ============================================================
+st.markdown(
+    '<div class="main-title">📄 Walfaanaa Magarsaa</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    '<div class="subtitle">Data Analyst | Data Scientist | BI Developer</div>',
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    f"""
+    <div class="contact">
+        📞 +251 912 861 288 &nbsp; | &nbsp;
+        📧 walfanamegersa3@gmail.com
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.markdown(
+    """
+    <div class="contact">
+        🔗 <a href="https://www.linkedin.com/in/walfaanaa-magarsaa/" target="_blank">
+        LinkedIn Profile
+        </a>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.caption(f"CV updated: {today_date}")
 
 st.divider()
 
-# ================= APPLICATION =================
-st.subheader("📨 Job Application")
-
-company = st.text_input("🏢 Company Name")
-position = st.text_input("💼 Position")
-
-application_text = st.text_area("✍️ Write Application", height=150)
-
-if st.button("✨ Generate Application"):
-    application_text = f"""
-I am writing to apply for the position of {position or 'the role'} at {company or 'your organization'}.
-
-With strong skills in SQL, Python, BI tools, and Machine Learning, I can contribute effectively.
-
-I have experience in data analytics, dashboards, and ETL processes.
-
-Thank you for your consideration.
-"""
-
-# ================= PREVIEW =================
-st.subheader("📄 Preview")
-
-st.write(f"Date: {today_date}")
-st.write(f"To: {company or '________'}")
-st.write(f"Position: {position or '________'}")
-
-st.write("Dear Hiring Manager,")
-
-st.write(application_text or "Your application will appear here...")
-
-st.write("Sincerely,")
-st.write("Walfaanaa Magarsaa")
-
-st.divider()
-
-# ================= PROFILE =================
+# ============================================================
+# PROFILE
+# ============================================================
 col1, col2 = st.columns([1, 3])
 
 with col1:
-    st.image("1728453971208.jpg", width=140)
+    try:
+        response = requests.get(PROFILE_IMAGE, timeout=10)
+        response.raise_for_status()
+        st.image(BytesIO(response.content), width=140)
+    except Exception:
+        st.info("Profile image unavailable")
 
 with col2:
-    st.title("Walfaanaa Magarsaa")
-    st.write("Data Analyst | Data Scientist | BI Developer")
+    st.header("Walfaanaa Magarsaa")
+    st.write(
+        """
+        Data professional with experience in data analytics, SQL,
+        Python, Business Intelligence, reporting, ETL processes,
+        dashboards, and Machine Learning.
+        """
+    )
 
 st.divider()
 
-# ================= EDUCATION =================
+# ============================================================
+# JOB APPLICATION
+# ============================================================
+st.subheader("📨 Job Application")
+
+company = st.text_input(
+    "🏢 Company Name",
+    placeholder="Enter company name"
+)
+
+position = st.text_input(
+    "💼 Position",
+    placeholder="Enter position"
+)
+
+application_text = st.text_area(
+    "✍️ Application Letter",
+    value=st.session_state.application_text,
+    height=220,
+    placeholder="Write your application letter here..."
+)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button(
+        "✨ Generate Application",
+        use_container_width=True
+    ):
+        st.session_state.application_text = f"""
+I am writing to apply for the position of {position or 'the advertised position'} at {company or 'your organization'}.
+
+I hold an MSc in Computational Data Science, an MBA in Business Administration, and a BSc in Statistics. I have professional experience in data analytics, SQL, Python, Business Intelligence, reporting, ETL processes, and Machine Learning.
+
+My experience includes developing analytical solutions, preparing management reports, building dashboards, working with databases, and transforming data into actionable insights.
+
+I am confident that my technical background, analytical skills, and professional experience would allow me to contribute effectively to your organization.
+
+Thank you for considering my application. I would welcome the opportunity to discuss how my skills and experience can contribute to your team.
+
+Sincerely,
+Walfaanaa Magarsaa
+"""
+
+        st.rerun()
+
+with col2:
+    if st.button(
+        "🗑️ Clear Application",
+        use_container_width=True
+    ):
+        st.session_state.application_text = ""
+        st.rerun()
+
+# ============================================================
+# PREVIEW
+# ============================================================
+st.subheader("📄 Application Preview")
+
+preview_text = (
+    st.session_state.application_text
+    if st.session_state.application_text
+    else application_text
+)
+
+st.markdown(
+    f"""
+    <div class="preview-box">
+
+    <strong>Date:</strong> {today_date}<br><br>
+
+    <strong>To:</strong> {company or "________________________"}<br>
+
+    <strong>Position:</strong> {position or "________________________"}<br><br>
+
+    Dear Hiring Manager,<br><br>
+
+    {preview_text.replace(chr(10), "<br>") if preview_text else "Your application will appear here..."}
+
+    <br><br>
+
+    Sincerely,<br>
+    <strong>Walfaanaa Magarsaa</strong>
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+st.divider()
+
+# ============================================================
+# EDUCATION
+# ============================================================
 st.subheader("🎓 Education")
-st.write("""
-- MSc Computational Data Science (2024)
-- MBA Business Administration (2020)
-- BSc Statistics (2016)
-""")
 
-st.markdown("### 📄 View Certificates")
+st.markdown(
+    """
+    **MSc Computational Data Science** — 2024
+
+    **MBA Business Administration** — 2020
+
+    **BSc Statistics** — 2016
+    """
+)
+
+st.markdown("### 📄 Certificates")
+
 for name, url in files.items():
-    st.link_button(f"📄 {name}", url)
+    st.link_button(
+        f"📄 {name}",
+        url,
+        use_container_width=True
+    )
 
-# ================= EXPERIENCE =================
+st.divider()
+
+# ============================================================
+# EXPERIENCE
+# ============================================================
 st.subheader("💼 Experience")
-st.write("""
-- Cooperative Bank of Oromia
-- INSA Data Analytics
-- CSA Supervisor
-""")
+
+st.markdown(
+    """
+    **Cooperative Bank of Oromia**
+    
+    Data Analytics / Reporting
+
+    **INSA**
+    
+    Data Analytics / Data Science Research
+
+    **CSA**
+    
+    Supervisor
+    """
+)
 
 st.markdown("### 📄 Experience Evidence")
+
 for name, url in exp_files.items():
-    st.link_button(f"📄 {name}", url)
+    st.link_button(
+        f"📄 {name}",
+        url,
+        use_container_width=True
+    )
 
 st.divider()
 
-# ================= SKILLS =================
-st.subheader("🧠 Skills")
-st.write("""
-- SQL, Python
-- Power BI, Tableau, Excel
-- Machine Learning
-""")
+# ============================================================
+# SKILLS
+# ============================================================
+st.subheader("🧠 Technical Skills")
+
+skills = [
+    "SQL",
+    "Python",
+    "Power BI",
+    "Tableau",
+    "Microsoft Excel",
+    "Machine Learning",
+    "Data Analytics",
+    "ETL",
+    "Data Visualization",
+    "Reporting",
+    "Database Management"
+]
+
+cols = st.columns(3)
+
+for i, skill in enumerate(skills):
+    with cols[i % 3]:
+        st.markdown(
+            f'<div class="skill-box">🔹 {skill}</div>',
+            unsafe_allow_html=True
+        )
 
 st.divider()
 
-# ================= CREATE CV PDF =================
+# ============================================================
+# PDF HELPER
+# ============================================================
+def safe_text(text):
+    """
+    Convert text into characters supported by the default FPDF font.
+    """
+    if not text:
+        return ""
+
+    replacements = {
+        "–": "-",
+        "—": "-",
+        "’": "'",
+        "“": '"',
+        "”": '"',
+        "•": "-",
+        "©": "(c)",
+        "®": "(R)",
+        "™": "(TM)",
+        "✓": "[OK]",
+    }
+
+    for old, new in replacements.items():
+        text = text.replace(old, new)
+
+    return text.encode("latin-1", "replace").decode("latin-1")
+
+
+# ============================================================
+# CREATE PROFESSIONAL CV PDF
+# ============================================================
 def create_cv_pdf():
     pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
 
-    lines = [
-        "Curriculum Vitae",
+    pdf.set_auto_page_break(
+        auto=True,
+        margin=15
+    )
+
+    pdf.add_page()
+
+    # ---------------- HEADER ----------------
+    pdf.set_font("Arial", "B", 20)
+    pdf.cell(
+        0,
+        12,
+        "WALFAANAA MAGARSAA",
+        ln=True,
+        align="C"
+    )
+
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(
+        0,
+        8,
+        "Data Analyst | Data Scientist | BI Developer",
+        ln=True,
+        align="C"
+    )
+
+    pdf.set_font("Arial", size=10)
+
+    pdf.cell(
+        0,
+        7,
+        "Email: walfanamegersa3@gmail.com | Phone: +251 912 861 288",
+        ln=True,
+        align="C"
+    )
+
+    pdf.cell(
+        0,
+        7,
+        "LinkedIn: linkedin.com/in/walfaanaa-magarsaa/",
+        ln=True,
+        align="C"
+    )
+
+    pdf.cell(
+        0,
+        7,
         f"Date: {today_date}",
-        "",
-        "Walfaanaa Magarsaa",
-        "Email: walfanamegersa3@gmail.com",
-        "Phone: +251912861288",
-        "",
-        "APPLICATION",
-        f"To: {company or ''}",
-        f"Position: {position or ''}",
-        "",
-        application_text or "",
-        "",
-        "EDUCATION",
-        "MSc Computational Data Science",
-        "MBA Business Administration",
-        "BSc Statistics",
-        "",
-        "EXPERIENCE",
-        "Cooperative Bank of Oromia",
-        "INSA Data Analytics",
-        "CSA Supervisor",
-        "",
-        "SKILLS",
-        "SQL, Python, BI Tools, Machine Learning"
+        ln=True,
+        align="C"
+    )
+
+    pdf.ln(5)
+
+    # ---------------- PROFILE ----------------
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 9, "PROFESSIONAL PROFILE", ln=True)
+
+    pdf.set_font("Arial", size=10)
+
+    profile = (
+        "Data professional with experience in data analytics, SQL, Python, "
+        "Business Intelligence, reporting, ETL processes, dashboards, "
+        "database management, and Machine Learning. Experienced in "
+        "transforming data into meaningful insights and developing "
+        "analytical solutions to support decision making."
+    )
+
+    pdf.multi_cell(
+        0,
+        6,
+        safe_text(profile)
+    )
+
+    pdf.ln(3)
+
+    # ---------------- EDUCATION ----------------
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 9, "EDUCATION", ln=True)
+
+    pdf.set_font("Arial", size=10)
+
+    education = [
+        "MSc Computational Data Science - 2024",
+        "MBA Business Administration - 2020",
+        "BSc Statistics - 2016"
     ]
 
-    for line in lines:
-        pdf.multi_cell(0, 8, line)
+    for item in education:
+        pdf.multi_cell(
+            0,
+            6,
+            safe_text("- " + item)
+        )
 
-    return pdf.output(dest="S").encode("latin-1")
+    pdf.ln(3)
 
-# ================= MERGE PDF =================
+    # ---------------- EXPERIENCE ----------------
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 9, "PROFESSIONAL EXPERIENCE", ln=True)
+
+    pdf.set_font("Arial", size=10)
+
+    experience = [
+        (
+            "Cooperative Bank of Oromia",
+            "Data Analytics / Reporting"
+        ),
+        (
+            "INSA",
+            "Data Analytics / Data Science Research"
+        ),
+        (
+            "CSA",
+            "Supervisor"
+        )
+    ]
+
+    for organization, role in experience:
+        pdf.set_font("Arial", "B", 10)
+        pdf.cell(
+            0,
+            6,
+            safe_text(organization),
+            ln=True
+        )
+
+        pdf.set_font("Arial", size=10)
+        pdf.cell(
+            0,
+            6,
+            safe_text(role),
+            ln=True
+        )
+
+        pdf.ln(1)
+
+    pdf.ln(3)
+
+    # ---------------- SKILLS ----------------
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 9, "TECHNICAL SKILLS", ln=True)
+
+    pdf.set_font("Arial", size=10)
+
+    skill_text = ", ".join(skills)
+
+    pdf.multi_cell(
+        0,
+        6,
+        safe_text(skill_text)
+    )
+
+    pdf.ln(5)
+
+    # ---------------- APPLICATION ----------------
+    pdf.set_font("Arial", "B", 14)
+    pdf.cell(0, 9, "APPLICATION", ln=True)
+
+    pdf.set_font("Arial", size=10)
+
+    pdf.cell(
+        0,
+        6,
+        safe_text(f"Company: {company}"),
+        ln=True
+    )
+
+    pdf.cell(
+        0,
+        6,
+        safe_text(f"Position: {position}"),
+        ln=True
+    )
+
+    pdf.ln(3)
+
+    pdf.multi_cell(
+        0,
+        6,
+        safe_text(
+            st.session_state.application_text
+            or application_text
+            or ""
+        )
+    )
+
+    pdf.ln(5)
+
+    pdf.cell(
+        0,
+        6,
+        "Sincerely,",
+        ln=True
+    )
+
+    pdf.cell(
+        0,
+        6,
+        "Walfaanaa Magarsaa",
+        ln=True
+    )
+
+    return bytes(pdf.output())
+
+
+# ============================================================
+# DOWNLOAD REMOTE PDF
+# ============================================================
+def download_pdf(url):
+    """
+    Download a PDF from GitHub.
+    """
+    response = requests.get(
+        url,
+        timeout=20
+    )
+
+    response.raise_for_status()
+
+    return BytesIO(response.content)
+
+
+# ============================================================
+# MERGE FULL PACKAGE
+# ============================================================
 def merge_all_pdfs():
+
     merger = PdfMerger()
 
-    # Add CV
-    merger.append(BytesIO(create_cv_pdf()))
+    # CV
+    merger.append(
+        BytesIO(create_cv_pdf())
+    )
 
-    # Add certificates
-    for url in files.values():
-        try:
-            response = requests.get(url)
-            merger.append(BytesIO(response.content))
-        except:
-            pass
+    # Certificates
+    for name, url in files.items():
 
-    # Add experience
-    for url in exp_files.values():
         try:
-            response = requests.get(url)
-            merger.append(BytesIO(response.content))
-        except:
-            pass
+            pdf_file = download_pdf(url)
+            merger.append(pdf_file)
+
+        except Exception as e:
+            st.warning(
+                f"Could not add {name}: {e}"
+            )
+
+    # Experience documents
+    for name, url in exp_files.items():
+
+        try:
+            pdf_file = download_pdf(url)
+            merger.append(pdf_file)
+
+        except Exception as e:
+            st.warning(
+                f"Could not add {name}: {e}"
+            )
 
     output = BytesIO()
+
     merger.write(output)
     merger.close()
 
+    output.seek(0)
+
     return output.getvalue()
 
-# ================= DOWNLOAD SECTION =================
-st.subheader("⬇️ Download")
 
-# CV only
+# ============================================================
+# DOWNLOAD SECTION
+# ============================================================
+st.subheader("⬇️ Download Documents")
+
+# ---------------- CV ----------------
 cv_pdf = create_cv_pdf()
+
 st.download_button(
-    "📄 Download CV (PDF)",
+    label="📄 Download CV",
     data=cv_pdf,
-    file_name="Walfaanaa_CV.pdf",
-    mime="application/pdf"
+    file_name="Walfaanaa_Magarsaa_CV.pdf",
+    mime="application/pdf",
+    use_container_width=True
 )
 
-# Full package
-full_pdf = merge_all_pdfs()
-st.download_button(
-    "📦 Download FULL Package (CV + Certificates)",
-    data=full_pdf,
-    file_name="Walfaanaa_Full.pdf",
-    mime="application/pdf"
+# ---------------- FULL PACKAGE ----------------
+with st.spinner("Preparing CV + certificates + experience documents..."):
+
+    try:
+        full_pdf = merge_all_pdfs()
+
+        st.download_button(
+            label="📦 Download Full Application Package",
+            data=full_pdf,
+            file_name="Walfaanaa_Magarsaa_Full_Application.pdf",
+            mime="application/pdf",
+            use_container_width=True
+        )
+
+    except Exception as e:
+
+        st.error(
+            f"Could not create the full PDF package: {e}"
+        )
+
+st.divider()
+
+# ============================================================
+# FOOTER
+# ============================================================
+st.caption(
+    "© Walfaanaa Magarsaa | CV & Job Application Portal"
 )
