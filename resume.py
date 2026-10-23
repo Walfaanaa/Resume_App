@@ -506,7 +506,7 @@ def create_cv_pdf():
     )
 
     experience = [
-        ("Cooperative Bank of Oromia", "Data Analytics / Reporting"),
+        ("Cooperative Bank of Oromia", "Senior Data Analyst"),
         ("INSA", "Data Analytics / Data Science Research"),
         ("CSA", "Supervisor")
     ]
