@@ -37,13 +37,14 @@ files = {
     "Certification": BASE_URL + "Certification.pdf",
 }
 
-# Education documents only: MSc, MBA, BSc
+# Education documents only
 education_files = {
     "MSc Certificate": files["MSc Certificate"],
     "MBA Certificate": files["MBA Certificate"],
     "BSc Certificate": files["BSc Certificate"],
 }
 
+# Experience documents only
 exp_files = {
     "Experience Proof": BASE_URL + "Experience.pdf"
 }
@@ -192,10 +193,7 @@ application_text = st.text_area(
 col1, col2 = st.columns(2)
 
 with col1:
-    if st.button(
-        "✨ Generate Application",
-        use_container_width=True
-    ):
+    if st.button("✨ Generate Application", use_container_width=True):
         st.session_state.application_text = f"""
 I am writing to apply for the position of {position or 'the advertised position'} at {company or 'your organization'}.
 
@@ -213,10 +211,7 @@ Walfaanaa Magarsaa
         st.rerun()
 
 with col2:
-    if st.button(
-        "🗑️ Clear Application",
-        use_container_width=True
-    ):
+    if st.button("🗑️ Clear Application", use_container_width=True):
         st.session_state.application_text = ""
         st.rerun()
 
@@ -341,9 +336,7 @@ st.divider()
 # PDF HELPER
 # ============================================================
 def safe_text(text):
-    """
-    Convert text into characters supported by the default FPDF font.
-    """
+    """Convert text into characters supported by the default FPDF font."""
     if not text:
         return ""
 
@@ -516,7 +509,6 @@ def create_cv_pdf():
     )
 
     pdf.set_font("Arial", size=10)
-
     pdf.cell(
         0, 6, safe_text(f"Company: {company or ''}"),
         new_x="LMARGIN", new_y="NEXT"
@@ -557,12 +549,10 @@ def create_cv_pdf():
 
 
 # ============================================================
-# DOWNLOAD REMOTE PDF
+# DOWNLOAD AND VALIDATE REMOTE PDF
 # ============================================================
 def download_pdf(url):
-    """
-    Download a PDF from GitHub and return it as BytesIO.
-    """
+    """Download a PDF from GitHub and return it as BytesIO."""
     response = requests.get(url, timeout=30)
     response.raise_for_status()
 
@@ -571,7 +561,6 @@ def download_pdf(url):
     if not content:
         raise ValueError("Downloaded file is empty.")
 
-    # Check the PDF file signature.
     if not content.lstrip().startswith(b"%PDF-"):
         raise ValueError(
             f"The URL did not return a valid PDF: {url}"
@@ -581,16 +570,31 @@ def download_pdf(url):
 
 
 # ============================================================
-# MERGE EDUCATION DOCUMENTS ONLY
-# MSc + MBA + BSc
+# GENERIC PDF MERGER
 # ============================================================
-def merge_education_pdfs():
+def merge_pdf_documents(document_urls, cv_first=False):
+    """
+    Merge the supplied PDF URLs.
+    If cv_first=True, include the generated CV as the first document.
+    """
     merger = PdfMerger()
+    pdf_streams = []
 
     try:
-        for name, url in education_files.items():
-            pdf_file = download_pdf(url)
-            merger.append(pdf_file)
+        if cv_first:
+            cv_data = create_cv_pdf()
+
+            if isinstance(cv_data, bytearray):
+                cv_data = bytes(cv_data)
+
+            cv_stream = BytesIO(cv_data)
+            pdf_streams.append(cv_stream)
+            merger.append(cv_stream)
+
+        for name, url in document_urls.items():
+            pdf_stream = download_pdf(url)
+            pdf_streams.append(pdf_stream)
+            merger.append(pdf_stream)
 
         output = BytesIO()
         merger.write(output)
@@ -601,41 +605,35 @@ def merge_education_pdfs():
     finally:
         merger.close()
 
+        for pdf_stream in pdf_streams:
+            pdf_stream.close()
+
 
 # ============================================================
-# MERGE FULL APPLICATION PACKAGE
+# EDUCATION DOCUMENTS ONLY: MSc + MBA + BSc
+# ============================================================
+def merge_education_pdfs():
+    return merge_pdf_documents(education_files)
+
+
+# ============================================================
+# EXPERIENCE DOCUMENTS ONLY
+# ============================================================
+def merge_experience_pdfs():
+    return merge_pdf_documents(exp_files)
+
+
+# ============================================================
+# FULL APPLICATION PACKAGE
 # CV + ALL CERTIFICATES + EXPERIENCE DOCUMENTS
 # ============================================================
 def merge_all_pdfs():
-    merger = PdfMerger()
+    all_documents = {**files, **exp_files}
 
-    try:
-        # Add CV first.
-        cv_data = create_cv_pdf()
-
-        if isinstance(cv_data, bytearray):
-            cv_data = bytes(cv_data)
-
-        merger.append(BytesIO(cv_data))
-
-        # Add all certificates, including Certification.pdf.
-        for name, url in files.items():
-            pdf_file = download_pdf(url)
-            merger.append(pdf_file)
-
-        # Add experience documents.
-        for name, url in exp_files.items():
-            pdf_file = download_pdf(url)
-            merger.append(pdf_file)
-
-        output = BytesIO()
-        merger.write(output)
-        output.seek(0)
-
-        return output.getvalue()
-
-    finally:
-        merger.close()
+    return merge_pdf_documents(
+        all_documents,
+        cv_first=True
+    )
 
 
 # ============================================================
@@ -667,12 +665,9 @@ except Exception as e:
 
 # ============================================================
 # 2. DOWNLOAD EDUCATION DOCUMENTS ONLY
-# MSc + MBA + BSc
 # ============================================================
 try:
-    with st.spinner(
-        "Preparing MSc + MBA + BSc certificates..."
-    ):
+    with st.spinner("Preparing MSc + MBA + BSc certificates..."):
         education_pdf = merge_education_pdfs()
 
     st.download_button(
@@ -685,13 +680,31 @@ try:
     )
 
 except Exception as e:
-    st.error(
-        f"Could not create education PDF: {e}"
-    )
+    st.error(f"Could not create education PDF: {e}")
 
 
 # ============================================================
-# 3. DOWNLOAD FULL APPLICATION PACKAGE
+# 3. DOWNLOAD EXPERIENCE DOCUMENTS ONLY
+# ============================================================
+try:
+    with st.spinner("Preparing experience documents..."):
+        experience_pdf = merge_experience_pdfs()
+
+    st.download_button(
+        label="💼 Download Experience Documents",
+        data=experience_pdf,
+        file_name="Walfaanaa_Magarsaa_Experience_Documents.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        key="download_experience"
+    )
+
+except Exception as e:
+    st.error(f"Could not create experience PDF: {e}")
+
+
+# ============================================================
+# 4. DOWNLOAD FULL APPLICATION PACKAGE
 # ============================================================
 try:
     with st.spinner(
@@ -709,9 +722,7 @@ try:
     )
 
 except Exception as e:
-    st.error(
-        f"Could not create the full PDF package: {e}"
-    )
+    st.error(f"Could not create the full PDF package: {e}")
 
 st.divider()
 
