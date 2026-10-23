@@ -1,3 +1,4 @@
+
 import streamlit as st
 from datetime import datetime
 from fpdf import FPDF
@@ -22,7 +23,10 @@ today_date = datetime.today().strftime("%B %d, %Y")
 # ============================================================
 # GITHUB FILE URLS
 # ============================================================
-BASE_URL = "https://raw.githubusercontent.com/Walfaanaa/Resume_App/main/"
+BASE_URL = (
+    "https://raw.githubusercontent.com/"
+    "Walfaanaa/Resume_App/main/"
+)
 
 PROFILE_IMAGE = BASE_URL + "1728453971208.jpg"
 
@@ -31,6 +35,13 @@ files = {
     "MBA Certificate": BASE_URL + "MBA_certificate.pdf",
     "BSc Certificate": BASE_URL + "BSc_certificate.pdf",
     "Certification": BASE_URL + "Certification.pdf",
+}
+
+# Education documents only: MSc, MBA, BSc
+education_files = {
+    "MSc Certificate": files["MSc Certificate"],
+    "MBA Certificate": files["MBA Certificate"],
+    "BSc Certificate": files["BSc Certificate"],
 }
 
 exp_files = {
@@ -102,12 +113,14 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Senior Data Analyst | Data Scientist | BI Developer</div>',
+    '<div class="subtitle">'
+    'Senior Data Analyst | Data Scientist | BI Developer'
+    '</div>',
     unsafe_allow_html=True
 )
 
 st.markdown(
-    f"""
+    """
     <div class="contact">
         📞 +251 912 861 288 &nbsp; | &nbsp;
         📧 walfanamegersa3@gmail.com
@@ -119,16 +132,14 @@ st.markdown(
 st.markdown(
     """
     <div class="contact">
-        🔗 <a href="https://www.linkedin.com/in/walfaanaa-magarsaa/" target="_blank">
-        LinkedIn Profile
-        </a>
+        🔗 <a href="https://www.linkedin.com/in/walfaanaa-magarsaa/"
+        target="_blank">LinkedIn Profile</a>
     </div>
     """,
     unsafe_allow_html=True
 )
 
 st.caption(f"CV updated: {today_date}")
-
 st.divider()
 
 # ============================================================
@@ -199,7 +210,6 @@ Thank you for considering my application. I would welcome the opportunity to dis
 Sincerely,
 Walfaanaa Magarsaa
 """
-
         st.rerun()
 
 with col2:
@@ -211,7 +221,7 @@ with col2:
         st.rerun()
 
 # ============================================================
-# PREVIEW
+# APPLICATION PREVIEW
 # ============================================================
 st.subheader("📄 Application Preview")
 
@@ -224,22 +234,14 @@ preview_text = (
 st.markdown(
     f"""
     <div class="preview-box">
-
-    <strong>Date:</strong> {today_date}<br><br>
-
-    <strong>To:</strong> {company or "________________________"}<br>
-
-    <strong>Position:</strong> {position or "________________________"}<br><br>
-
-    Dear Hiring Manager,<br><br>
-
-    {preview_text.replace(chr(10), "<br>") if preview_text else "Your application will appear here..."}
-
-    <br><br>
-
-    Sincerely,<br>
-    <strong>Walfaanaa Magarsaa</strong>
-
+        <strong>Date:</strong> {today_date}<br><br>
+        <strong>To:</strong> {company or "________________________"}<br>
+        <strong>Position:</strong> {position or "________________________"}<br><br>
+        Dear Hiring Manager,<br><br>
+        {preview_text.replace(chr(10), "<br>") if preview_text else "Your application will appear here..."}
+        <br><br>
+        Sincerely,<br>
+        <strong>Walfaanaa Magarsaa</strong>
     </div>
     """,
     unsafe_allow_html=True
@@ -281,15 +283,15 @@ st.subheader("💼 Experience")
 st.markdown(
     """
     **Cooperative Bank of Oromia**
-    
+
     Senior Data Analyst
 
     **INSA**
-    
+
     Data Analytics / Data Science Research
 
     **CSA**
-    
+
     Supervisor
     """
 )
@@ -306,7 +308,7 @@ for name, url in exp_files.items():
 st.divider()
 
 # ============================================================
-# SKILLS
+# TECHNICAL SKILLS
 # ============================================================
 st.subheader("🧠 Technical Skills")
 
@@ -370,76 +372,48 @@ def safe_text(text):
 def create_cv_pdf():
     pdf = FPDF()
     pdf.set_auto_page_break(auto=True, margin=15)
-    pdf.add_page()
-
-    # Page margins
     pdf.set_left_margin(15)
     pdf.set_right_margin(15)
+    pdf.add_page()
 
-    # ========================================================
     # HEADER
-    # ========================================================
     pdf.set_font("Arial", "B", 20)
     pdf.cell(
-        0,
-        12,
-        "WALFAANAA MAGARSAA",
-        new_x="LMARGIN",
-        new_y="NEXT",
-        align="C"
+        0, 12, "WALFAANAA MAGARSAA",
+        new_x="LMARGIN", new_y="NEXT", align="C"
     )
 
     pdf.set_font("Arial", "B", 11)
     pdf.cell(
-        0,
-        7,
-        "Data Analyst | Data Scientist | BI Developer",
-        new_x="LMARGIN",
-        new_y="NEXT",
-        align="C"
+        0, 7, "Data Analyst | Data Scientist | BI Developer",
+        new_x="LMARGIN", new_y="NEXT", align="C"
     )
 
     pdf.set_font("Arial", size=9)
-
     pdf.cell(
-        0,
-        6,
+        0, 6,
         "Email: walfanamegersa3@gmail.com | Phone: +251 912 861 288",
-        new_x="LMARGIN",
-        new_y="NEXT",
-        align="C"
+        new_x="LMARGIN", new_y="NEXT", align="C"
     )
 
     pdf.cell(
-        0,
-        6,
+        0, 6,
         "LinkedIn: linkedin.com/in/walfaanaa-magarsaa/",
-        new_x="LMARGIN",
-        new_y="NEXT",
-        align="C"
+        new_x="LMARGIN", new_y="NEXT", align="C"
     )
 
     pdf.cell(
-        0,
-        6,
-        f"Date: {today_date}",
-        new_x="LMARGIN",
-        new_y="NEXT",
-        align="C"
+        0, 6, f"Date: {today_date}",
+        new_x="LMARGIN", new_y="NEXT", align="C"
     )
 
     pdf.ln(5)
 
-    # ========================================================
-    # PROFILE
-    # ========================================================
+    # PROFESSIONAL PROFILE
     pdf.set_font("Arial", "B", 14)
     pdf.cell(
-        0,
-        8,
-        "PROFESSIONAL PROFILE",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 8, "PROFESSIONAL PROFILE",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.set_font("Arial", size=10)
@@ -453,25 +427,17 @@ def create_cv_pdf():
     )
 
     pdf.multi_cell(
-        180,
-        6,
-        safe_text(profile),
-        new_x="LMARGIN",
-        new_y="NEXT"
+        180, 6, safe_text(profile),
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.ln(3)
 
-    # ========================================================
     # EDUCATION
-    # ========================================================
     pdf.set_font("Arial", "B", 14)
     pdf.cell(
-        0,
-        8,
-        "EDUCATION",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 8, "EDUCATION",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.set_font("Arial", size=10)
@@ -484,25 +450,17 @@ def create_cv_pdf():
 
     for item in education:
         pdf.multi_cell(
-            180,
-            6,
-            safe_text("- " + item),
-            new_x="LMARGIN",
-            new_y="NEXT"
+            180, 6, safe_text("- " + item),
+            new_x="LMARGIN", new_y="NEXT"
         )
 
     pdf.ln(3)
 
-    # ========================================================
-    # EXPERIENCE
-    # ========================================================
+    # PROFESSIONAL EXPERIENCE
     pdf.set_font("Arial", "B", 14)
     pdf.cell(
-        0,
-        8,
-        "PROFESSIONAL EXPERIENCE",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 8, "PROFESSIONAL EXPERIENCE",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     experience = [
@@ -512,41 +470,27 @@ def create_cv_pdf():
     ]
 
     for organization, role in experience:
-
         pdf.set_font("Arial", "B", 10)
-
         pdf.cell(
-            0,
-            6,
-            safe_text(organization),
-            new_x="LMARGIN",
-            new_y="NEXT"
+            0, 6, safe_text(organization),
+            new_x="LMARGIN", new_y="NEXT"
         )
 
         pdf.set_font("Arial", size=10)
-
         pdf.cell(
-            0,
-            6,
-            safe_text(role),
-            new_x="LMARGIN",
-            new_y="NEXT"
+            0, 6, safe_text(role),
+            new_x="LMARGIN", new_y="NEXT"
         )
 
         pdf.ln(2)
 
     pdf.ln(2)
 
-    # ========================================================
-    # SKILLS
-    # ========================================================
+    # TECHNICAL SKILLS
     pdf.set_font("Arial", "B", 14)
     pdf.cell(
-        0,
-        8,
-        "TECHNICAL SKILLS",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 8, "TECHNICAL SKILLS",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.set_font("Arial", size=10)
@@ -558,43 +502,29 @@ def create_cv_pdf():
     )
 
     pdf.multi_cell(
-        180,
-        6,
-        safe_text(skill_text),
-        new_x="LMARGIN",
-        new_y="NEXT"
+        180, 6, safe_text(skill_text),
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.ln(5)
 
-    # ========================================================
     # APPLICATION
-    # ========================================================
     pdf.set_font("Arial", "B", 14)
     pdf.cell(
-        0,
-        8,
-        "APPLICATION",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 8, "APPLICATION",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.set_font("Arial", size=10)
 
     pdf.cell(
-        0,
-        6,
-        safe_text(f"Company: {company or ''}"),
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 6, safe_text(f"Company: {company or ''}"),
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.cell(
-        0,
-        6,
-        safe_text(f"Position: {position or ''}"),
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 6, safe_text(f"Position: {position or ''}"),
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.ln(4)
@@ -606,102 +536,26 @@ def create_cv_pdf():
     )
 
     if application.strip():
-
         pdf.multi_cell(
-            180,
-            6,
-            safe_text(application),
-            new_x="LMARGIN",
-            new_y="NEXT"
+            180, 6, safe_text(application),
+            new_x="LMARGIN", new_y="NEXT"
         )
 
     pdf.ln(5)
 
     pdf.cell(
-        0,
-        6,
-        "Sincerely,",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 6, "Sincerely,",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
     pdf.cell(
-        0,
-        6,
-        "Walfaanaa Magarsaa",
-        new_x="LMARGIN",
-        new_y="NEXT"
+        0, 6, "Walfaanaa Magarsaa",
+        new_x="LMARGIN", new_y="NEXT"
     )
 
-    # ========================================================
-    # RETURN PDF
-    # ========================================================
     return pdf.output()
 
-# ============================================================
-# DOWNLOAD REMOTE PDF
-# ============================================================
-def download_pdf(url):
-    """
-    Download a PDF from GitHub.
-    """
-    response = requests.get(
-        url,
-        timeout=20
-    )
 
-    response.raise_for_status()
-
-    return BytesIO(response.content)
-
-
-# ============================================================
-# MERGE FULL PACKAGE
-# ============================================================
-def merge_all_pdfs():
-
-    merger = PdfMerger()
-
-    # CV
-    merger.append(
-        BytesIO(create_cv_pdf())
-    )
-
-    # Certificates
-    for name, url in files.items():
-
-        try:
-            pdf_file = download_pdf(url)
-            merger.append(pdf_file)
-
-        except Exception as e:
-            st.warning(
-                f"Could not add {name}: {e}"
-            )
-
-    # Experience documents
-    for name, url in exp_files.items():
-
-        try:
-            pdf_file = download_pdf(url)
-            merger.append(pdf_file)
-
-        except Exception as e:
-            st.warning(
-                f"Could not add {name}: {e}"
-            )
-
-    output = BytesIO()
-
-    merger.write(output)
-    merger.close()
-
-    output.seek(0)
-
-    return output.getvalue()
-
-
-# ============================================================
 # ============================================================
 # DOWNLOAD REMOTE PDF
 # ============================================================
@@ -709,78 +563,72 @@ def download_pdf(url):
     """
     Download a PDF from GitHub and return it as BytesIO.
     """
-    response = requests.get(
-        url,
-        timeout=20
-    )
-
+    response = requests.get(url, timeout=30)
     response.raise_for_status()
 
-    # Make sure the downloaded content is actually a PDF
-    content_type = response.headers.get("Content-Type", "").lower()
+    content = response.content
 
-    if not response.content:
+    if not content:
         raise ValueError("Downloaded file is empty.")
 
-    return BytesIO(response.content)
+    # Check the PDF file signature.
+    if not content.lstrip().startswith(b"%PDF-"):
+        raise ValueError(
+            f"The URL did not return a valid PDF: {url}"
+        )
+
+    return BytesIO(content)
 
 
 # ============================================================
-# MERGE FULL PACKAGE
+# MERGE EDUCATION DOCUMENTS ONLY
+# MSc + MBA + BSc
 # ============================================================
-def merge_all_pdfs():
-
+def merge_education_pdfs():
     merger = PdfMerger()
 
     try:
-        # ----------------------------------------------------
-        # CV
-        # ----------------------------------------------------
+        for name, url in education_files.items():
+            pdf_file = download_pdf(url)
+            merger.append(pdf_file)
+
+        output = BytesIO()
+        merger.write(output)
+        output.seek(0)
+
+        return output.getvalue()
+
+    finally:
+        merger.close()
+
+
+# ============================================================
+# MERGE FULL APPLICATION PACKAGE
+# CV + ALL CERTIFICATES + EXPERIENCE DOCUMENTS
+# ============================================================
+def merge_all_pdfs():
+    merger = PdfMerger()
+
+    try:
+        # Add CV first.
         cv_data = create_cv_pdf()
 
-        # Ensure CV is bytes
-        if isinstance(cv_data, bytes):
-            cv_bytes = cv_data
-        elif isinstance(cv_data, bytearray):
-            cv_bytes = bytes(cv_data)
-        else:
-            cv_bytes = bytes(cv_data)
+        if isinstance(cv_data, bytearray):
+            cv_data = bytes(cv_data)
 
-        merger.append(BytesIO(cv_bytes))
+        merger.append(BytesIO(cv_data))
 
-        # ----------------------------------------------------
-        # CERTIFICATES
-        # ----------------------------------------------------
+        # Add all certificates, including Certification.pdf.
         for name, url in files.items():
+            pdf_file = download_pdf(url)
+            merger.append(pdf_file)
 
-            try:
-                pdf_file = download_pdf(url)
-                merger.append(pdf_file)
-
-            except Exception as e:
-                st.warning(
-                    f"Could not add {name}: {e}"
-                )
-
-        # ----------------------------------------------------
-        # EXPERIENCE DOCUMENTS
-        # ----------------------------------------------------
+        # Add experience documents.
         for name, url in exp_files.items():
+            pdf_file = download_pdf(url)
+            merger.append(pdf_file)
 
-            try:
-                pdf_file = download_pdf(url)
-                merger.append(pdf_file)
-
-            except Exception as e:
-                st.warning(
-                    f"Could not add {name}: {e}"
-                )
-
-        # ----------------------------------------------------
-        # CREATE MERGED PDF
-        # ----------------------------------------------------
         output = BytesIO()
-
         merger.write(output)
         output.seek(0)
 
@@ -796,23 +644,17 @@ def merge_all_pdfs():
 st.subheader("⬇️ Download Documents")
 
 # ============================================================
-# CV DOWNLOAD
+# 1. DOWNLOAD CV ONLY
 # ============================================================
 try:
-
     cv_pdf = create_cv_pdf()
 
-    # Explicitly convert to bytes
-    if isinstance(cv_pdf, bytes):
-        cv_download = cv_pdf
-    elif isinstance(cv_pdf, bytearray):
-        cv_download = bytes(cv_pdf)
-    else:
-        cv_download = bytes(cv_pdf)
+    if isinstance(cv_pdf, bytearray):
+        cv_pdf = bytes(cv_pdf)
 
     st.download_button(
         label="📄 Download CV",
-        data=cv_download,
+        data=cv_pdf,
         file_name="Walfaanaa_Magarsaa_CV.pdf",
         mime="application/pdf",
         use_container_width=True,
@@ -820,34 +662,46 @@ try:
     )
 
 except Exception as e:
+    st.error(f"Could not create CV PDF: {e}")
 
+
+# ============================================================
+# 2. DOWNLOAD EDUCATION DOCUMENTS ONLY
+# MSc + MBA + BSc
+# ============================================================
+try:
+    with st.spinner(
+        "Preparing MSc + MBA + BSc certificates..."
+    ):
+        education_pdf = merge_education_pdfs()
+
+    st.download_button(
+        label="🎓 Download Education Documents (MSc + MBA + BSc)",
+        data=education_pdf,
+        file_name="Walfaanaa_Magarsaa_Education_Documents.pdf",
+        mime="application/pdf",
+        use_container_width=True,
+        key="download_education"
+    )
+
+except Exception as e:
     st.error(
-        f"Could not create CV PDF: {e}"
+        f"Could not create education PDF: {e}"
     )
 
 
 # ============================================================
-# FULL PACKAGE DOWNLOAD
+# 3. DOWNLOAD FULL APPLICATION PACKAGE
 # ============================================================
 try:
-
     with st.spinner(
         "Preparing CV + certificates + experience documents..."
     ):
-
         full_pdf = merge_all_pdfs()
-
-        # Explicitly convert to bytes
-        if isinstance(full_pdf, bytes):
-            full_download = full_pdf
-        elif isinstance(full_pdf, bytearray):
-            full_download = bytes(full_pdf)
-        else:
-            full_download = bytes(full_pdf)
 
     st.download_button(
         label="📦 Download Full Application Package",
-        data=full_download,
+        data=full_pdf,
         file_name="Walfaanaa_Magarsaa_Full_Application.pdf",
         mime="application/pdf",
         use_container_width=True,
@@ -855,14 +709,11 @@ try:
     )
 
 except Exception as e:
-
     st.error(
         f"Could not create the full PDF package: {e}"
     )
 
-
 st.divider()
-
 
 # ============================================================
 # FOOTER
