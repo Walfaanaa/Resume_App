@@ -102,7 +102,7 @@ st.markdown(
 )
 
 st.markdown(
-    '<div class="subtitle">Data Analyst | Data Scientist | BI Developer</div>',
+    '<div class="subtitle">Senior Data Analyst | Data Scientist | BI Developer</div>',
     unsafe_allow_html=True
 )
 
@@ -282,7 +282,7 @@ st.markdown(
     """
     **Cooperative Bank of Oromia**
     
-    Data Analytics / Reporting
+    Senior Data Analyst
 
     **INSA**
     
